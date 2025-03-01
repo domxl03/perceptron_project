@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perceptron Neural Network</title>
+    <title>Perceptron Project</title>
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     
     <style>
@@ -58,11 +58,11 @@
 </head>
 <body>
     <header>
-        <h1>Perceptron Neural Network</h1>
+        <h1>Perceptron</h1>
     </header>
 
     <div class="container">
-        <p>Select values to form a "T" or "L" shape.</p>
+        <p>Select 1's and 0's to make a T or a L</p>
         
         <div class="grid-container">
             <script>
@@ -112,7 +112,7 @@
 
         def process_and_predict(event):
             prediction = predict(get_np_switch_values(), weights, bias)
-            pydom["#mpl"].html = f"Predicted Shape: {prediction[0]}"
+            pydom["#mpl"].html = f"Shape: {prediction[0]}"
     </script>
 </body>
 </html>
