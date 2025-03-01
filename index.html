@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perceptron Neural Network</title>
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+        header {
+            background: #444;
+            color: white;
+            padding: 10px;
+        }
+        .container {
+            width: 90%;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+        .gridbox {
+            background: #eee;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #mpl {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Perceptron Neural Network</h1>
+    </header>
+
+    <div class="container">
+        <p>Select values to form a "T" or "L" shape.</p>
+        
+        <div class="grid-container">
+            <script>
+                for (let i = 1; i <= 16; i++) {
+                    document.write(`
+                        <div class="gridbox">
+                            <label for="switch${i}">S${i}</label>
+                            <select id="switch${i}" class="switch">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                            </select>
+                        </div>
+                    `);
+                }
+            </script>
+        </div>
+
+        <button id="get-time" py-click="process_and_predict">Predict</button>
+        <div id="mpl"></div>
+    </div>
+
+    <script type="py" config="pyscript.toml">
+        import numpy as np
+        import pandas as pd
+        from pyodide.http import open_url
+        from pyscript import display
+        from pyweb import pydom
+
+        weights = np.array([0, 0.01, 0.02, 0.01, -0.01, 0, 0.01, 0, -0.01, 0, 0.01, 0, -0.01, -0.01, -0.01, -0.01])
+        bias = 0.0
+
+        dataset_url = "https://raw.githubusercontent.com/domxl03/perceptron_project/main/t_l.csv"
+        dataset = pd.read_csv(open_url(dataset_url))
+        dataset.columns = dataset.columns.str.strip()
+        dataset['Label'] = dataset['Label'].replace({'T': 1, 'L': -1})
+        dataset_np = dataset.to_numpy()
+        np.random.shuffle(dataset_np)
+
+        def activation_function(z):
+            return np.where(z >= 0, 1, -1)
+
+        def predict(X_test, weights, bias):
+            return ["T" if pred == 1 else "L" for pred in activation_function(np.dot(X_test, weights) + bias)]
+
+        def get_np_switch_values():
+            return np.array([int(pydom[f"#switch{i}"][0].value) for i in range(1, 17)]).reshape(1, -1)
+
+        def process_and_predict(event):
+            prediction = predict(get_np_switch_values(), weights, bias)
+            pydom["#mpl"].html = f"Predicted Shape: {prediction[0]}"
+    </script>
+</body>
+</html>
